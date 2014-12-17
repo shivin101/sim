@@ -1,4 +1,5 @@
 #include<iostream.h>
+
 void fetch()
 {
 	CP++;
@@ -7,6 +8,9 @@ void fetch()
 	read(); IR.L(); MS.l();      //IF MS AND IR ARE SAME PLEASE REMOVE ACCORDINGLY
 //	rom(RAM[PC.val]);  //this may eliminate IR and MS alltogether
 }
+
+int CP; 			 	//declaration of Clock Pulse 
+
 void rom(int n)
 {
 	switch(n)
@@ -89,8 +93,8 @@ void rom(int n)
 		
 		case 9: 							//add <R>
 				CP++;
-				RG[RAM[PC.val]-26].e();
 				PC.val++;
+				RG[RAM[PC.val]-26].e();
 				OR.l(); 
 				CP++;
 				AR.e(); ALU(add);  AR.l();
@@ -99,8 +103,8 @@ void rom(int n)
 	
 		case 10: 							//sub<R>
 				CP++;
-				RG[RAM[PC.val]-26].e();
 				PC.val++;
+				RG[RAM[PC.val]-26].e();
 				OR.l(); 
 				CP++;
 				AR.e(); ALU(sub);  AR.l();
@@ -109,8 +113,8 @@ void rom(int n)
 	
 		case 11: 								//xor<R>
 				CP++;
-				RG[RAM[PC.val]-26].e();
 				PC.val++;
+				RG[RAM[PC.val]-26].e();
 				OR.l(); 
 				CP++;
 				AR.e(); ALU(xr);  AR.l();
@@ -119,8 +123,8 @@ void rom(int n)
 		
 		case 12: 											//AND<R>		
 				CP++;
-				RG[RAM[PC.val]-26].e();
 				PC.val++;
+				RG[RAM[PC.val]-26].e();
 				OR.l(); 
 				CP++;
 				AR.e(); ALU(land);  AR.l();
@@ -129,8 +133,8 @@ void rom(int n)
 		
 		case 13: 												//OR<R>
 				CP++;
-				RG[RAM[PC.val]-26].e();
 				PC.val++;
+				RG[RAM[PC.val]-26].e();
 				OR.l(); 
 				CP++;
 				AR.e(); ALU(lor);  AR.l();
@@ -139,8 +143,8 @@ void rom(int n)
 		
 		case 14: 													//cmp<R>
 				CP++;
-				RG[RAM[PC.val]-26].e();
 				PC.val++;
+				RG[RAM[PC.val]-26].e();
 				OR.l(); 
 				CP++;
 				AR.e(); ALU(cmp);
@@ -149,8 +153,8 @@ void rom(int n)
 	
 		case 15:   												//movs()
 				CP++
-				RG[RAM[PC.val]-26].e();
 				PC.val++;
+				RG[RAM[PC.val]-26].e();
 				ALU(pass0);
 				AR.l();
 				fetch();
@@ -159,11 +163,108 @@ void rom(int n)
 		case 16: 													//movd()
 				CP++;
 				AR.l();		
-				RG[RAM[PC.val]-26].l();
 				PC.val++;
+				RG[RAM[PC.val]-26].l();
+				break;
+		
+		case 17: 						//movi <R>	xx										
+				CP++;
+				Pc.e(); MR.l(); PC.val++;
+				CP++;
+				read(); 
+				PC.val++;
+				RG[RAM[PC.val]-26].l();
+				fetch();
+				break;
+
+		case 18:  					//stor <R>
+				CP++;
+				AR.e(); MR.l();
+				CP++;
+				PC.val++;
+				RG[RAM[PC.val]-26].e();
+				write();
+				fetch();
+				break;
+		
+		case 19: 				//load <R>
+				CP++;
+				AR.e(); MR.l();
+				CP++;
+				read();
+				PC.val++;
+				RG[RAM[PC.val]-26].l();
+				fetch()
 				break;
 	
-	
+		case 20:  			//push <R>
+				CP++;
+				SP.val--;
+				SP.e(); MR.l();
+				CP++;
+				PC.val++;
+				RG[RAM[PC.val]-26].e();
+				write();
+				fetch();
+				break;
+
+		 case 21: 					//pop <R>
+				CP++;
+				SP.e(); MR.l(); SP.val++;
+				CP++
+				read(); 
+				PC.val++;
+				RG[RAM[PC.val]-26].l();
+				fetch();
+				break;
+
+			case 22: 					//jumpd <FL> xx
+				CP++;
+				PC.e(); MR.l(); PC.val++; //put flag function here
+				CP++;
+				read(); PC.l();
+				fetch();
+				break;
+
+			case 23: 				//jmpr <FL>
+				CP++;
+				//flag operations
+				CP++;	
+				AR.e(); PC.l();
+				fetch();
+				break;
+			
+			case 24:  				//cd <FL> xx
+					CP++;
+					PC.e(); MR.l(); PC.val++; 
+					//flag operations
+					CP++;
+					read(); OR.l(); SP.val--;
+					CP++;
+					SP.e(); MR.l();
+					CP++;
+					PC.e(); write();
+					CP++;
+					OR.e(); PC.l();
+					fetch();
+					break;
+
+			case 25:   		//cr <FL>
+					CP++;
+					//flag operations
+					CP++;
+					SP.val--;
+					CP++;
+					SP.e(); MR.l();
+					CP++;
+					PC.e(); write();
+					CP++;
+					AR.e(); PC.l();
+					fetch();
+					break;
+
+
+
 	}
 
 }
